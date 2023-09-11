@@ -4,9 +4,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import logging
 import requests
-import random
 import os
+import random
 from dotenv import load_dotenv
+from user_agent import generate_user_agent
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -49,7 +51,8 @@ def scrape():
 
     # Random User-Agent for both Selenium and cloudscraper
     # user_agent = ua.random
-    user_agent = random.choice(USER_AGENTS)
+    # user_agent = random.choice(USER_AGENTS)
+    user_agent = generate_user_agent()
 
 
 
