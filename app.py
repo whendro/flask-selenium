@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import logging
 import requests
+from fake_useragent import UserAgent
 
 app = Flask(__name__)
 
@@ -14,6 +15,9 @@ logger = logging.getLogger(__name__)
 # Telegram bot settings
 TELEGRAM_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'
+
+# Initialize UserAgent
+ua = UserAgent()
 
 def send_telegram_message(message):
     try:
@@ -33,12 +37,16 @@ def scrape():
     if not url:
         return jsonify({"error": "URL not provided"}), 400
 
+    # Random User-Agent for both Selenium and cloudscraper
+    user_agent = ua.random
+
     # First, try with Selenium
     options = Options()
     options.headless = True
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
+    options.add_argument(f"user-agent={user_agent}")
     driver = webdriver.Chrome(options=options)
     try:
         driver.get(url)
@@ -51,7 +59,7 @@ def scrape():
         send_telegram_message(f"Selenium error: {e}")
 
     # If Selenium fails, fall back to cloudscraper
-    scraper = cloudscraper.create_scraper()
+    scraper = cloudscraper.create_scraper(browser=user_agent)
     try:
         response = scraper.get(url)
         return response.text
