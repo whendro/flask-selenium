@@ -4,8 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import logging
 import requests
-from fake_useragent import UserAgent
-imporrt random
+# from fake_useragent import UserAgent
+import random
 
 app = Flask(__name__)
 
@@ -23,7 +23,7 @@ USER_AGENTS = [
     ]
 
 # Initialize UserAgent
-ua = UserAgent()
+# ua = UserAgent()
 
 def send_telegram_message(message):
     try:
