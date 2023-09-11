@@ -4,8 +4,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import logging
 import requests
-# from fake_useragent import UserAgent
 import random
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -14,8 +18,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Telegram bot settings
-TELEGRAM_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
-TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 USER_AGENTS = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
         "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0",
