@@ -1,10 +1,31 @@
 from flask import Flask, request, jsonify
+import cloudscraper
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
+import logging
+import requests
 
 app = Flask(__name__)
-#ua = UserAgent()
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Telegram bot settings
+TELEGRAM_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'
+
+def send_telegram_message(message):
+    try:
+        payload = {
+            'chat_id': TELEGRAM_CHAT_ID,
+            'text': message,
+            'parse_mode': 'HTML'
+        }
+        response = requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage", data=payload)
+        response.raise_for_status()
+    except Exception as e:
+        logger.error(f"Failed to send Telegram message: {e}")
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
@@ -12,37 +33,32 @@ def scrape():
     if not url:
         return jsonify({"error": "URL not provided"}), 400
 
-    # Set up Selenium with headless Chrome
+    # First, try with cloudscraper
+    scraper = cloudscraper.create_scraper()
+    try:
+        response = scraper.get(url)
+        return response.text
+    except Exception as e:
+        logger.error(f"Cloudscraper failed: {e}")
+        send_telegram_message(f"Cloudscraper error: {e}")
+
+    # If cloudscraper fails, fall back to Selenium
     options = Options()
     options.headless = True
-
-    # Set random user-agent
-    #user_agent = ua.random
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument(f"user-agent={user_agent}")
-
-    # Proxy setup if provided
-    proxy = request.json.get('proxy')
-    if proxy:
-        options.add_argument(f"--proxy-server={proxy}")
-
+    options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(options=options)
-    driver.get(url)
-    driver.set_page_load_timeout(30)  # Set timeout to 30 seconds
-    html = driver.page_source
-    driver.quit()
-
-    # Parse with BeautifulSoup if 'parse' key is provided in request
-    parsed_data = {}
-    if request.json.get('parse'):
-        soup = BeautifulSoup(html, 'html.parser')
-        # Add your parsing logic here
-        # Example: parsed_data['title'] = soup.title.string
-
-    return jsonify({"html": html, "parsed_data": parsed_data})
+    try:
+        driver.get(url)
+        page_source = driver.page_source
+        driver.quit()
+        return page_source
+    except Exception as e:
+        driver.quit()
+        logger.error(f"Selenium failed: {e}")
+        send_telegram_message(f"Selenium error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
