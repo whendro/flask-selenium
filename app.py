@@ -45,4 +45,4 @@ def scrape():
     return jsonify({"html": html, "parsed_data": parsed_data})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
