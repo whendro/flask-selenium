@@ -33,16 +33,7 @@ def scrape():
     if not url:
         return jsonify({"error": "URL not provided"}), 400
 
-    # First, try with cloudscraper
-    scraper = cloudscraper.create_scraper()
-    try:
-        response = scraper.get(url)
-        return response.text
-    except Exception as e:
-        logger.error(f"Cloudscraper failed: {e}")
-        send_telegram_message(f"Cloudscraper error: {e}")
-
-    # If cloudscraper fails, fall back to Selenium
+    # First, try with Selenium
     options = Options()
     options.headless = True
     options.add_argument("--no-sandbox")
@@ -58,6 +49,15 @@ def scrape():
         driver.quit()
         logger.error(f"Selenium failed: {e}")
         send_telegram_message(f"Selenium error: {e}")
+
+    # If Selenium fails, fall back to cloudscraper
+    scraper = cloudscraper.create_scraper()
+    try:
+        response = scraper.get(url)
+        return response.text
+    except Exception as e:
+        logger.error(f"Cloudscraper failed: {e}")
+        send_telegram_message(f"Cloudscraper error: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
