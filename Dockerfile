@@ -23,7 +23,7 @@ WORKDIR /app
 
 # Install Python dependencies
 # Copy the .env file and other necessary files
-COPY .env .env
+COPY .env.example .env
 COPY app.py app.py
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
