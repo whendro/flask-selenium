@@ -22,7 +22,8 @@ RUN wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.
 WORKDIR /app
 
 # Install Python dependencies
-# Copy the .env file and other necessary files
+# Copy the .env file and other necessary files    
+RUN mkdir -p /app
 COPY .env.example /app/.env
 COPY app.py /app/app.py
 COPY requirements.txt /app/requirements.txt
