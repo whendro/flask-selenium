@@ -23,11 +23,10 @@ WORKDIR /app
 
 # Install Python dependencies
 # Copy the .env file and other necessary files    
-RUN mkdir -p /app
-COPY .env.example /app/.env
-COPY app.py /app/app.py
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY .env.example .env
+COPY app.py app.py
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Run the Flask app
-CMD ["python", "/app/app.py"]
+CMD ["python", "app.py"]

@@ -8,6 +8,6 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./app:/app
+      - ./:/app
     environment:
       - FLASK_RUN_HOST=0.0.0.0
