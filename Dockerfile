@@ -19,14 +19,14 @@ RUN wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.
 
 
 # Set up the working directory
-WORKDIR /
+WORKDIR /app
 
 # Install Python dependencies
 # Copy the .env file and other necessary files
-COPY .env.example .env
-COPY app.py app.py
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY .env.example /app/.env
+COPY app.py /app/app.py
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Run the Flask app
-CMD ["python", "app.py"]
+CMD ["python", "/app/app.py"]
