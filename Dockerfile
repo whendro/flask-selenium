@@ -19,7 +19,7 @@ RUN wget https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.
 
 
 # Set up the working directory
-WORKDIR /app
+WORKDIR /
 
 # Install Python dependencies
 # Copy the .env file and other necessary files
